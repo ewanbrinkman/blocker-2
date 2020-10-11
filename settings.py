@@ -32,14 +32,15 @@ PLAYER_LAYER = 1
 PLAYER_HIT_RECT_WIDTH = 35
 PLAYER_HIT_RECT_HEIGHT = 35
 # Player movement settings.
-JUMPS = 2
+JUMPS = 1
 PLAYER_MOVEMENT = {
     "jump": {
         "friction": -1.5,
         "acc": 600,
-        "jump": -750,
+        "jump": -1000,
         "gravity": 1500,
-        "wall jump": 400
+        "wall jump": 400,
+        "wall slide": 0.6
     },
     "spin": {
         "friction": -2,

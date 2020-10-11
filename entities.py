@@ -171,7 +171,7 @@ class Player(pg.sprite.Sprite):
         if move_type == "jump":
             # Forward/backwards movement.
             # Apply friction.
-            self.acc.x += self.vel.x * PLAYER_MOVEMENT["jump"]["friction"]
+            self.acc += self.vel * PLAYER_MOVEMENT["jump"]["friction"]
             # New velocity after.
             # vf = vi + at
             self.vel = self.vel + self.acc * self.game.dt
@@ -217,6 +217,14 @@ class Player(pg.sprite.Sprite):
             if self.move_type == "jump":
                 # Stop against the wall.
                 self.vel.x = 0
+                # Slide down a wall slowly if not on the ground and going down
+                # beside a wall.
+                if self.gravity_orientation == 1 and not self.on_ground \
+                        and self.vel.y > 0:
+                    self.vel.y *= PLAYER_MOVEMENT["jump"]["wall slide"]
+                elif self.gravity_orientation == -1 and not self.on_ground \
+                        and self.vel.y < 0:
+                    self.vel.y *= PLAYER_MOVEMENT["jump"]["wall slide"]
             else:
                 # Bounce off the wall.
                 self.vel.x *= -1
