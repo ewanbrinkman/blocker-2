@@ -17,6 +17,7 @@ class Game:
         pg.display.set_caption(TITLE)
         self.screen = pg.display.set_mode(
             (SCREEN_WIDTH, SCREEN_HEIGHT), FULLSCREEN)
+        self.show_fps = False
         self.debug = False
 
         # Sprites groups.
@@ -117,15 +118,10 @@ class Game:
                 if event.key == K_b:
                     # Toggle debug mode.
                     self.debug = not self.debug
+                if event.key == K_f:
+                    self.show_fps = not self.show_fps
                 if event.key == K_SPACE:
-                    # Test to see if a wall jump is possible.
-                    wall_jump = self.player.can_wall_jump()
-                    if wall_jump:
-                        # Wall jump.
-                        self.player.jump(wall_jump)
-                    elif not self.player.on_ground and self.player.jumps > 0:
-                        # This will only apply to jumps in the air.
-                        self.player.jump(False)
+                    self.player.try_jump("push")
                 if event.key == K_g:
                     # Change the player gravity up/down.
                     self.player.gravity_orientation *= -1
@@ -165,11 +161,6 @@ class Game:
         for sprite in self.all_sprites:
             self.draw_boundary(sprite, sprite.color)
 
-        # Put debug information in the title.
-        self.draw_text(f"FPS: {round(self.clock.get_fps(), 2)}", OVERLAY_SIZE,
-                       TEXT_COLOR, SCREEN_WIDTH / 2, 0, align="n",
-                       font_name=self.theme_font)
-
     def draw(self):
         # Game draw loop.
         self.screen.fill(BGCOLOR)
@@ -179,8 +170,14 @@ class Game:
         for sprite in self.visible_sprites:
             self.screen.blit(sprite.image, self.camera.apply_sprite(sprite))
 
-        # Draw debug.
+        if self.show_fps:
+            # Draw FPS
+            self.draw_text(f"FPS: {round(self.clock.get_fps(), 2)}",
+                           OVERLAY_SIZE,
+                           TEXT_COLOR, SCREEN_WIDTH / 2, 0, align="n",
+                           font_name=self.theme_font)
         if self.debug:
+            # Draw debug.
             self.draw_debug()
 
         # Flip the display (update the display).

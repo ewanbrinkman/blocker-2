@@ -95,34 +95,70 @@ class Player(pg.sprite.Sprite):
         self.rect.center = (self.pos.x, self.pos.y)
         self.hit_rect.center = self.rect.center
 
-    def can_wall_jump(self):
-        if not self.on_ground:
-            self.hit_rect.centerx += 1
-            hit_obj, hit_x, side = collide_group(self, self.game.walls, "x")
-            self.hit_rect.centerx -= 1
-            if hit_obj:
-                return -1
-            else:
-                self.hit_rect.centerx -= 1
-                hit_obj, hit_x, side = collide_group(self, self.game.walls, "x")
-                self.hit_rect.centerx += 1
-                if hit_obj:
-                    return 1
-                else:
-                    return False
+    def collisions(self, group, directions):
+        # All the hit data,
+        hits = {direction: None for direction in directions}
 
-    def jump(self, wall_jump):
-        # Jump.
+        for direction in directions:
+            if direction == "up":
+                self.hit_rect.centery += 1
+                hits['up'] = [data for data in collide_group(self, group, "y")]
+                self.hit_rect.centery -= 1
+            elif direction == "down":
+                self.hit_rect.centery -= 1
+                hits['down'] = [data for data in collide_group(self, group,
+                                                               "y")]
+                self.hit_rect.centery += 1
+            elif direction == "right":
+                self.hit_rect.centerx += 1
+                hits['right'] = [data for data in collide_group(self, group,
+                                                                "x")]
+                self.hit_rect.centerx -= 1
+            elif direction == "left":
+                self.hit_rect.centerx -= 1
+                hits['left'] = [data for data in collide_group(self,group,
+                                                               "x")]
+                self.hit_rect.centerx += 1
+
+        return hits
+
+    def jump(self, wall_jump, x_direction=None):
+        # Jump up.
         self.jumping = True
         self.vel.y = PLAYER_MOVEMENT["jump"]["jump"] * self.gravity_orientation
         if wall_jump:
-            # Wall jump if required. The wall jump value will be either
-            # positive or negative 1, which will determine which way to move
-            # away from the wall.
-            self.vel.x = PLAYER_MOVEMENT["jump"]["wall jump"] * wall_jump
+            # Also jump away from the wall if it is a wall jump.
+            self.vel.x = PLAYER_MOVEMENT["jump"]["wall jump"] * x_direction
         else:
-            # Only take off jumps if it is not a wall jump.
+            # Only subtract a jump if it is not a wall jump. Wall jumps
+            # don't use up jumps.
             self.jumps -= 1
+
+    def try_jump(self, trigger):
+        # Trigger is the action that triggered the jump being called.
+        if trigger == "hold":
+            # The jump button was held down.
+            if self.on_ground:
+                # Ground jump.
+                self.jump(False)
+        elif trigger == "push":
+            # The jump button was pushed down.
+            if not self.on_ground:
+                # Test to see if there is a wall to jump off of.
+                wall_jump_direction = None
+                collisions = self.collisions(self.game.walls,
+                                             ("left", "right"))
+                # Get the direction to go.
+                if collisions['right'][0]:
+                    wall_jump_direction = -1
+                elif collisions['left'][0]:
+                    wall_jump_direction = 1
+                if wall_jump_direction:
+                    # Wall jump.
+                    self.jump(True, x_direction=wall_jump_direction)
+                elif not self.on_ground and self.jumps > 0:
+                    # Air jump.
+                    self.jump(False)
 
     def apply_keys(self, move_type):
         # Get key presses.
@@ -134,8 +170,8 @@ class Player(pg.sprite.Sprite):
                 self.acc.x = -PLAYER_MOVEMENT["jump"]["acc"]
             if keys[K_d] or keys[K_RIGHT]:
                 self.acc.x = PLAYER_MOVEMENT["jump"]["acc"]
-            if keys[K_SPACE] and self.on_ground:
-                self.jump(False)
+            if keys[K_SPACE]:
+                self.try_jump("hold")
         elif move_type == "spin":
             if keys[K_a] or keys[K_LEFT]:
                 self.rot_acc = PLAYER_MOVEMENT["spin"]["rot acc"]
@@ -206,7 +242,7 @@ class Player(pg.sprite.Sprite):
         elif self.pos.x > self.game.map.width:
             self.pos.x = 0
 
-        # Collision detection x.
+        # Wall collision detection x.
         self.hit_rect.centerx = self.pos.x
         hit_obj, hit_x, side = collide_group(self, self.game.walls, "x")
         if hit_x:
@@ -225,11 +261,11 @@ class Player(pg.sprite.Sprite):
                 elif self.gravity_orientation == -1 and not self.on_ground \
                         and self.vel.y < 0:
                     self.vel.y *= PLAYER_MOVEMENT["jump"]["wall slide"]
-            else:
+            elif self.move_type == "spin":
                 # Bounce off the wall.
                 self.vel.x *= -1
 
-        # Collision detection y.
+        # Wall collision detection y.
         self.hit_rect.centery = self.pos.y
         hit_obj, hit_y, side = collide_group(self, self.game.walls, "y")
         if hit_y:
