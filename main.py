@@ -16,7 +16,7 @@ class Game:
         # Display
         pg.display.set_caption(TITLE)
         self.screen = pg.display.set_mode(
-            (SCREEN_WIDTH, SCREEN_HEIGHT), FULLSCREEN)
+            (SCREEN_WIDTH, SCREEN_HEIGHT))#, FULLSCREEN)
         self.show_fps = False
         self.debug = False
 
@@ -24,8 +24,9 @@ class Game:
         self.all_sprites = pg.sprite.Group()
         self.visible_sprites = pg.sprite.Group()
         self.obstacles = pg.sprite.Group()
+        self.moving_obstacles = pg.sprite.Group()
         self.walls = pg.sprite.Group()
-        self.voids = pg.sprite.Group()
+        self.moving_walls = pg.sprite.Group()
 
         # Game loop.
         self.clock = pg.time.Clock()
@@ -56,6 +57,13 @@ class Game:
             self.player_imgs[filename] = new_img
             # self.player_imgs[filename] = pg.transform.rotate(new_img, 90)
 
+        # Other images.
+        self.wall_imgs = {}
+        for filename in WALL_IMGS:
+            new_img = pg.image.load(
+                os.path.join(img_folder, filename)).convert_alpha()
+            self.wall_imgs[filename] = new_img
+
         # Music.
         self.game_music = os.path.join(snd_folder, GAME_BG_MUSIC)
 
@@ -71,15 +79,35 @@ class Game:
         self.camera = Camera(SCREEN_WIDTH, SCREEN_HEIGHT,
                              self.map.width, self.map.height)
 
+        movement = {
+            "back": True,
+            "parts": {
+                1: {
+                    "vel": 15,
+                    "rot": 90,
+                    "steps": 100
+                },
+                # 2: {
+                #     "vel": 10,
+                #     "rot": 0,
+                #     "steps": 100
+                # }
+            }
+            }
+
         # Map objects.
         for tile_object in self.map.tilemap_data.objects:
             # The center of the tile.
             object_center = Vec(tile_object.x + tile_object.width / 2, tile_object.y + tile_object.height / 2)
             # Obstacles.
-            if tile_object.type == "obstacle":
-                if tile_object.name == "wall":
-                    Obstacle(self, tile_object.x, tile_object.y,
-                             tile_object.width, tile_object.height, "wall")
+            if tile_object.object == "obstacle":
+                Obstacle(self, tile_object.x, tile_object.y,
+                         tile_object.width, tile_object.height,
+                         tile_object.type)
+            elif tile_object.object == "moving_obstacle":
+                MovingObstacle(self, tile_object.x, tile_object.y,
+                               tile_object.width, tile_object.height,
+                               tile_object.type, movement)
 
     def new(self):
         # Create the map.

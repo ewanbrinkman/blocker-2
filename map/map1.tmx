@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.4" tiledversion="1.4.2" orientation="orthogonal" renderorder="right-down" width="40" height="30" tilewidth="70" tileheight="70" infinite="0" nextlayerid="8" nextobjectid="34">
+<map version="1.4" tiledversion="1.4.2" orientation="orthogonal" renderorder="right-down" width="40" height="30" tilewidth="70" tileheight="70" infinite="0" nextlayerid="9" nextobjectid="70">
  <tileset firstgid="1" name="tiles_spritesheet" tilewidth="70" tileheight="70" spacing="2" tilecount="156" columns="12">
   <image source="tiles_spritesheet.png" width="914" height="936"/>
  </tileset>
@@ -38,35 +38,120 @@
 </data>
  </layer>
  <objectgroup id="2" name="Walls">
-  <object id="1" name="wall" type="obstacle" x="0" y="1960" width="2800" height="140"/>
-  <object id="4" name="wall" type="obstacle" x="770" y="1890" width="1260" height="70"/>
-  <object id="5" name="wall" type="obstacle" x="2520" y="1890" width="280" height="70"/>
-  <object id="6" name="wall" type="obstacle" x="840" y="1452.5" width="630" height="17.5"/>
-  <object id="7" name="wall" type="obstacle" x="630" y="1452.5" width="70" height="17.5"/>
-  <object id="8" name="wall" type="obstacle" x="490" y="1522.5" width="70" height="17.5"/>
-  <object id="9" name="wall" type="obstacle" x="350" y="1592.5" width="70" height="17.5"/>
-  <object id="10" name="wall" type="obstacle" x="210" y="1662.5" width="70" height="17.5"/>
-  <object id="11" name="wall" type="obstacle" x="350" y="1732.5" width="70" height="17.5"/>
-  <object id="12" name="wall" type="obstacle" x="490" y="1802.5" width="70" height="17.5"/>
-  <object id="13" name="wall" type="obstacle" x="630" y="1872.5" width="70" height="17.5"/>
-  <object id="14" name="wall" type="obstacle" x="1680" y="1610" width="210" height="280"/>
-  <object id="15" name="wall" type="obstacle" x="1750" y="1470" width="140" height="140"/>
-  <object id="16" name="wall" type="obstacle" x="1820" y="1400" width="70" height="70"/>
-  <object id="17" name="wall" type="obstacle" x="1890" y="1750" width="70" height="140"/>
-  <object id="18" name="wall" type="obstacle" x="420" y="1050" width="560" height="35"/>
-  <object id="19" name="wall" type="obstacle" x="1120" y="840" width="70" height="35"/>
-  <object id="20" name="wall" type="obstacle" x="1400" y="840" width="70" height="35"/>
-  <object id="21" name="wall" type="obstacle" x="1680" y="840" width="70" height="35"/>
-  <object id="22" name="wall" type="obstacle" x="700" y="350" width="70" height="35"/>
-  <object id="23" name="wall" type="obstacle" x="980" y="350" width="70" height="35"/>
-  <object id="24" name="wall" type="obstacle" x="1260" y="350" width="70" height="35"/>
-  <object id="25" name="wall" type="obstacle" x="1540" y="350" width="490" height="35"/>
-  <object id="26" name="wall" type="obstacle" x="1960" y="840" width="280" height="35"/>
-  <object id="27" name="wall" type="obstacle" x="2240" y="840" width="70" height="980"/>
-  <object id="28" name="wall" type="obstacle" x="2380" y="840" width="70" height="980"/>
-  <object id="29" name="wall" type="obstacle" x="2590" y="840" width="70" height="980"/>
-  <object id="30" name="wall" type="obstacle" x="140" y="350" width="70" height="770"/>
-  <object id="31" name="wall" type="obstacle" x="420" y="350" width="70" height="560"/>
-  <object id="33" name="wall" type="obstacle" x="1120" y="1750" width="140" height="140"/>
+  <object id="13" name="wall" type="wall" x="630" y="1870" width="70" height="20">
+   <properties>
+    <property name="object" value="obstacle"/>
+   </properties>
+  </object>
+  <object id="38" name="wall" type="wall" x="490" y="1800" width="70" height="20">
+   <properties>
+    <property name="object" value="obstacle"/>
+   </properties>
+  </object>
+  <object id="39" name="wall" type="wall" x="350" y="1730" width="70" height="20">
+   <properties>
+    <property name="object" value="obstacle"/>
+   </properties>
+  </object>
+  <object id="40" name="wall" type="wall" x="210" y="1660" width="70" height="20">
+   <properties>
+    <property name="object" value="obstacle"/>
+   </properties>
+  </object>
+  <object id="41" name="wall" type="wall" x="350" y="1590" width="70" height="20">
+   <properties>
+    <property name="object" value="obstacle"/>
+   </properties>
+  </object>
+  <object id="42" name="wall" type="wall" x="490" y="1520" width="70" height="20">
+   <properties>
+    <property name="object" value="obstacle"/>
+   </properties>
+  </object>
+  <object id="44" name="wall" type="wall" x="630" y="1450" width="70" height="20">
+   <properties>
+    <property name="object" value="obstacle"/>
+   </properties>
+  </object>
+  <object id="45" name="wall" type="wall" x="840" y="1450" width="630" height="20">
+   <properties>
+    <property name="object" value="obstacle"/>
+   </properties>
+  </object>
+  <object id="46" name="wall" type="wall" x="0" y="1960" width="2800" height="140">
+   <properties>
+    <property name="object" value="obstacle"/>
+   </properties>
+  </object>
+  <object id="47" name="wall" type="wall" x="1120" y="1750" width="140" height="140">
+   <properties>
+    <property name="object" value="obstacle"/>
+   </properties>
+  </object>
+  <object id="48" name="wall" type="wall" x="770" y="1890" width="1260" height="70">
+   <properties>
+    <property name="object" value="obstacle"/>
+   </properties>
+  </object>
+  <object id="49" name="wall" type="wall" x="1680" y="1610" width="210" height="280">
+   <properties>
+    <property name="object" value="obstacle"/>
+   </properties>
+  </object>
+  <object id="50" name="wall" type="wall" x="1750" y="1470" width="140" height="140">
+   <properties>
+    <property name="object" value="obstacle"/>
+   </properties>
+  </object>
+  <object id="51" name="wall" type="wall" x="1820" y="1400" width="70" height="70">
+   <properties>
+    <property name="object" value="obstacle"/>
+   </properties>
+  </object>
+  <object id="52" name="wall" type="wall" x="1890" y="1750" width="70" height="140">
+   <properties>
+    <property name="object" value="obstacle"/>
+   </properties>
+  </object>
+  <object id="53" name="wall" type="wall" x="2520" y="1890" width="280" height="70">
+   <properties>
+    <property name="object" value="obstacle"/>
+   </properties>
+  </object>
+  <object id="60" name="wall" type="moving_wall" x="910" y="1677.5" width="157.5" height="20">
+   <properties>
+    <property name="object" value="moving_obstacle"/>
+   </properties>
+  </object>
+  <object id="62" name="wall" type="wall" x="560" y="1740" width="70" height="180">
+   <properties>
+    <property name="object" value="obstacle"/>
+   </properties>
+  </object>
+  <object id="63" name="wall" type="wall" x="420" y="1910" width="70" height="10">
+   <properties>
+    <property name="object" value="obstacle"/>
+   </properties>
+  </object>
+  <object id="65" name="wall" type="wall" x="630" y="1908" width="70" height="10">
+   <properties>
+    <property name="object" value="obstacle"/>
+   </properties>
+  </object>
+  <object id="67" name="wall" type="wall" x="490" y="1908" width="70" height="10">
+   <properties>
+    <property name="object" value="obstacle"/>
+   </properties>
+  </object>
+  <object id="68" name="wall" type="wall" x="350" y="1908" width="70" height="10">
+   <properties>
+    <property name="object" value="obstacle"/>
+   </properties>
+  </object>
+  <object id="69" name="wall" type="wall" x="280" y="1910" width="70" height="10">
+   <properties>
+    <property name="object" value="obstacle"/>
+   </properties>
+  </object>
  </objectgroup>
 </map>

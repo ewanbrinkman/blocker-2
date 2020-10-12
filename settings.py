@@ -12,8 +12,8 @@ MAGENTA = (255, 0, 255)
 SKY = (135, 206, 250)
 
 # Game settings.
-SCREEN_WIDTH = 1440
-SCREEN_HEIGHT = 900
+SCREEN_WIDTH = 500#1440
+SCREEN_HEIGHT = 500#900
 FPS = 60
 TITLE = "Game"
 BGCOLOR = SKY
@@ -29,10 +29,9 @@ THEME_FONT = "Booter.ttf"
 # Player settings.
 PLAYER_LAYER = 1
 # Player size.
-PLAYER_HIT_RECT_WIDTH = 35
-PLAYER_HIT_RECT_HEIGHT = 35
+PLAYER_HIT_RECT_WIDTH = 40
+PLAYER_HIT_RECT_HEIGHT = 40
 # Player movement settings.
-JUMPS = 1
 PLAYER_MOVEMENT = {
     "jump": {
         "friction": -1.5,
@@ -53,3 +52,4 @@ PLAYER_MOVEMENT = {
 GAME_IMG = "playerimg.png"
 GAME_BG_MUSIC = "grasslands.mp3"
 PLAYER_IMGS = ["playerimg.png"]
+WALL_IMGS = ["bridge.png", "sky.png"]
