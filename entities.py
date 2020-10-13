@@ -16,95 +16,13 @@ def collide_group(sprite, group, direction):
         # Find all sprites in the target group that are bring hit.
         hits = pg.sprite.spritecollide(sprite, group, False, collide_hit_rect_both)
         if hits:
-            # Return the position the sprite should be at so it is touching
-            # but not overlapping the sprite it touched.
-            if hits[0].hit_rect.centerx > sprite.hit_rect.centerx:
-                return hits[0], \
-                       hits[0].hit_rect.left - sprite.hit_rect.width / 2, \
-                       "left"
-
-            if hits[0].hit_rect.centerx < sprite.hit_rect.centerx:
-                return hits[0], \
-                       hits[0].hit_rect.right + sprite.hit_rect.width / 2, \
-                       "right"
+            return hits
 
     elif direction == "y":
         # Find all sprites in the target group that are bring hit.
         hits = pg.sprite.spritecollide(sprite, group, False, collide_hit_rect_both)
         if hits:
-            if sprite.vel.y > 0:
-                hit = min([hit.hit_rect.top for hit in hits])
-                sprite.pos.y = hit - sprite.hit_rect.width / 2
-                sprite.hit_rect.bottom = hit
-                sprite.vel.y = 0
-                sprite.jumping = False
-                sprite.on_ground = True
-            elif sprite.vel.y < 0:
-                hit = max([hit.hit_rect.bottom for hit in hits])
-                sprite.pos.y = hit + sprite.hit_rect.width / 2
-                sprite.hit_rect.top = hit
-                sprite.vel.y = 0
-        else:
-            sprite.on_ground = False
-
-            # if len(hits) > 1:
-            #     # Hit multiple.
-            #     finder = {hit.hit_rect.centery: hit for hit in hits}
-            #     # Find lowest bottom.
-            #     hit_centers = [hit.hit_rect.centery for hit in hits]
-            #     highest_centery = min(hit_centers)
-            #     lowest_centery = max(hit_centers)
-            #     # Find highest top.
-            #     print(hit_centers, highest_centery, lowest_centery, sprite.hit_rect.centery)
-            #     if abs(sprite.hit_rect.centery - highest_centery) <= \
-            #             abs(sprite.hit_rect.centery - lowest_centery):
-            #         print("top")
-            #         hit = finder[highest_centery]
-            #         return hit, \
-            #                hit.hit_rect.top - sprite.hit_rect.height / 2, \
-            #                "top"
-            #     else:
-            #         print("bottom")
-            #         hit = finder[lowest_centery]
-            #         return hit, \
-            #                hit.hit_rect.bottom + sprite.hit_rect.height / 2, \
-            #                "bottom"
-            # else:
-            #     # Return the position the sprite should be at so it is touching
-            #     # but not overlapping the sprite it touched.
-            #     if hits[0].hit_rect.centery > sprite.hit_rect.centery:
-            #         return hits[0], \
-            #                hits[0].hit_rect.top - sprite.hit_rect.height / 2, \
-            #                "top"
-            #
-            #     if hits[0].hit_rect.centery < sprite.hit_rect.centery:
-            #         return hits[0], \
-            #                hits[0].hit_rect.bottom + sprite.hit_rect.height / 2, \
-            #                "bottom"
-
-    # elif direction == "y":
-    #     # Find all sprites in the target group that are bring hit.
-    #     hits = pg.sprite.spritecollide(sprite, group, False, collide_hit_rect_both)
-    #     if hits:
-    #         a = [hit.hit_rect.centery for hit in hits]
-    #         print(a)
-    #         print(min(a), max(a), sprite.hit_rect.centery)
-    #         # Return the position the sprite should be at so it is touching
-    #         # but not overlapping the sprite it touched.
-    #         if hits[0].hit_rect.centery > sprite.hit_rect.centery:
-    #             return hits[0], \
-    #                    hits[0].hit_rect.top - sprite.hit_rect.height / 2, \
-    #                    "top"
-    #
-    #         if hits[0].hit_rect.centery < sprite.hit_rect.centery:
-    #             return hits[0], \
-    #                    hits[0].hit_rect.bottom + sprite.hit_rect.height / 2, \
-    #                    "bottom"
-
-    # Return three None values as no hit was detected. If there is a hit,
-    # three values are returned, so if there is no hit, three values must
-    # also be returned.
-    return None, None, None
+            return hits
 
 
 def screen_wrap(sprite):
@@ -127,20 +45,13 @@ class Player(pg.sprite.Sprite):
         self.pos = Vec(x, y)
         self.vel = Vec(0, 0)
         self.acc = Vec(0, 0)
-        self.rot = 0
-        self.rot_vel = 0
-        self.rot_acc = 0
-        # jump = up/down/left/right (diagonal movement works too).
-        # spin = forwards/backwards/left/right (spin to turn).
-        self.move_type = "jump"
         # Jumping.
-        self.jumping = True
+        self.jumping = False
         self.on_ground = False
         self.gravity_orientation = 1
         # Sprite image.
         self.image_string = image_string
         self.image = game.player_imgs[image_string]
-        self.image = pg.transform.rotate(self.image, self.rot)
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
         self.hit_rect = pg.Rect(self.rect.x, self.rect.y,
@@ -154,7 +65,6 @@ class Player(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
 
         # Image details.
-        self.image = pg.transform.rotate(self.image, self.rot)
         self.rect = self.image.get_rect()
         self.rect.center = (self.pos.x, self.pos.y)
         self.hit_rect.center = self.rect.center
@@ -198,7 +108,7 @@ class Player(pg.sprite.Sprite):
         # Trigger is the action that triggered the jump being called.
         if trigger == "hold":
             # The jump button was held down.
-            if not self.jumping:
+            if not self.jumping and self.on_ground:
                 # Ground jump.
                 self.jump(False)
         elif trigger == "push":
@@ -206,45 +116,36 @@ class Player(pg.sprite.Sprite):
             if not self.on_ground:
                 # Test to see if there is a wall to jump off of.
                 wall_jump_direction = None
-                collisions = self.collisions(self.game.walls,
-                                             ("left", "right"))
-                # Get the direction to go.
-                if collisions['right'][0]:
+
+                self.hit_rect.x += 1
+                collision = collide_group(self, self.game.walls, "x")
+                self.hit_rect.x -= 1
+
+                if collision:
                     wall_jump_direction = -1
-                elif collisions['left'][0]:
-                    wall_jump_direction = 1
+                else:
+                    self.hit_rect.x -= 1
+                    collision = collide_group(self, self.game.walls, "x")
+                    self.hit_rect.x += 1
+
+                    if collision:
+                        wall_jump_direction = 1
+
                 if wall_jump_direction:
                     # Wall jump.
                     self.jump(True, x_direction=wall_jump_direction)
 
-    def apply_keys(self, move_type):
+    def apply_keys(self):
         # Get key presses.
         keys = pg.key.get_pressed()
 
         # Apply key presses.
-        if move_type == "jump":
-            if keys[K_a] or keys[K_LEFT]:
-                self.acc.x = -PLAYER_MOVEMENT["jump"]["acc"]
-            if keys[K_d] or keys[K_RIGHT]:
-                self.acc.x = PLAYER_MOVEMENT["jump"]["acc"]
-            if keys[K_SPACE]:
-                self.try_jump("hold")
-        elif move_type == "spin":
-            if keys[K_a] or keys[K_LEFT]:
-                self.rot_acc = PLAYER_MOVEMENT["spin"]["rot acc"]
-            if keys[K_d] or keys[K_RIGHT]:
-                self.rot_acc = -PLAYER_MOVEMENT["spin"]["rot acc"]
-            if keys[K_w] or keys[K_UP]:
-                self.acc = Vec(PLAYER_MOVEMENT["spin"]["acc"], 0).rotate(-self.rot)
-            if keys[K_s] or keys[K_DOWN]:
-                self.acc = Vec(-PLAYER_MOVEMENT["spin"]["acc"] / 3, 0).rotate(-self.rot)
-
-    def move_type_update(self):
-        keys = pg.key.get_pressed()
-        if keys[K_1]:
-            self.move_type = "jump"
-        elif keys[K_2]:
-            self.move_type = "spin"
+        if keys[K_a] or keys[K_LEFT]:
+            self.acc.x = -PLAYER_MOVEMENT["jump"]["acc"]
+        if keys[K_d] or keys[K_RIGHT]:
+            self.acc.x = PLAYER_MOVEMENT["jump"]["acc"]
+        if keys[K_SPACE]:
+            self.try_jump("hold")
 
     def collide_walls(self):
         self.hit_rect.centerx = self.pos.x
@@ -287,50 +188,26 @@ class Player(pg.sprite.Sprite):
 
         self.rect.center = self.hit_rect.center
 
-    def move(self, move_type):
+    def move(self):
         # Reset acceleration.
         self.acc = Vec(0, 0)
-        self.rot_acc = 0
 
-        if move_type == "jump":
-            # Apply gravity to the jump move type.
-            self.acc = Vec(0, PLAYER_MOVEMENT["jump"]["gravity"] * self.gravity_orientation)
+        # Apply gravity.
+        self.acc = Vec(0, PLAYER_MOVEMENT["jump"]["gravity"] * self.gravity_orientation)
 
         # Get key presses for movement.
-        self.apply_keys(move_type)
+        self.apply_keys()
 
-        if move_type == "jump":
-            # Forward/backwards movement.
-            # Apply friction.
-            self.acc += self.vel * PLAYER_MOVEMENT["jump"]["friction"]
-            # New velocity after.
-            # vf = vi + at
-            self.vel = self.vel + self.acc * self.game.dt
-
-            # Displacement.
-            # d = vit + 1/2at^2
-            displacement = self.vel * self.game.dt + 0.5 * self.acc * self.game.dt ** 2
-            self.pos += displacement
-        elif move_type == "spin":
-            # Forward/backwards movement.
-            # Apply friction.
-            self.acc += self.vel * PLAYER_MOVEMENT["spin"]["friction"]
-            # New velocity after.
-            # vf = vi + at
-            self.vel = self.vel + self.acc * self.game.dt
-            # Displacement.
-            # d = vit + 1/2at^2
-            displacement = self.vel * self.game.dt + 0.5 * self.acc * self.game.dt ** 2
-            self.pos += displacement
-
-            # Rotation movement.
-            # Apply friction.
-            self.rot_acc += self.rot_vel * PLAYER_MOVEMENT["spin"]["friction"]
-            # New velocity after.
-            self.rot_vel = self.rot_vel + self.rot_acc * self.game.dt
-            # Displacement.
-            rot_displacement = self.rot_vel * self.game.dt + 0.5 * self.rot_acc * self.game.dt ** 2
-            self.rot += rot_displacement % 360
+        # Forward/backwards movement.
+        # Apply friction.
+        self.acc += self.vel * PLAYER_MOVEMENT["jump"]["friction"]
+        # New velocity after.
+        # vf = vi + at
+        self.vel = self.vel + self.acc * self.game.dt
+        # Displacement.
+        # d = vit + 1/2at^2
+        displacement = self.vel * self.game.dt + 0.5 * self.acc * self.game.dt ** 2
+        self.pos += displacement
 
         # Wrap around the screen.
         # screen_wrap(self)
@@ -390,11 +267,8 @@ class Player(pg.sprite.Sprite):
         # rect.
 
     def update(self):
-        # Update the movement mode.
-        self.move_type_update()
-
         # Move the player sprite based on the current movement mode type.
-        self.move(self.move_type)
+        self.move()
 
         # Update the sprite image with the correct positioning.
         self.update_image()

@@ -16,7 +16,7 @@ class Game:
         # Display
         pg.display.set_caption(TITLE)
         self.screen = pg.display.set_mode(
-            (SCREEN_WIDTH, SCREEN_HEIGHT))#, FULLSCREEN)
+            (SCREEN_WIDTH, SCREEN_HEIGHT))  # , FULLSCREEN)
         self.show_fps = False
         self.debug = False
 
@@ -32,6 +32,9 @@ class Game:
         self.clock = pg.time.Clock()
         self.running = True
         self.playing = True
+
+        self.player_pos = []
+        self.space_pos = []
 
         # Load data from files.
         self.load()
@@ -149,6 +152,8 @@ class Game:
                 if event.key == K_f:
                     self.show_fps = not self.show_fps
                 if event.key == K_SPACE:
+                    self.space_pos.append(Vec(self.player.pos.x,
+                                              self.player.pos.y))
                     self.player.try_jump("push")
                 if event.key == K_g:
                     # Change the player gravity up/down.
@@ -207,6 +212,32 @@ class Game:
         if self.debug:
             # Draw debug.
             self.draw_debug()
+
+        self.player_pos.append(Vec(self.player.pos.x, self.player.pos.y))
+        if len(self.player_pos) > 100:
+            del self.player_pos[0]
+        width, height = self.player.hit_rect.width, self.player.hit_rect.height
+        for pos in self.player_pos:
+            surface = pg.Surface(
+                (width, height))
+            surface.set_alpha(50)
+            surface.fill(self.player.color)
+            self.screen.blit(surface,
+                             self.camera.apply_rect(pg.Rect(pos.x - width / 2,
+                                                            pos.y - height / 2,
+                                                            width, height)))
+
+        if len(self.space_pos) > 2:
+            del self.space_pos[0]
+        for pos in self.space_pos:
+            surface = pg.Surface(
+                (width, height))
+            surface.set_alpha(128)
+            surface.fill(RED)
+            self.screen.blit(surface,
+                             self.camera.apply_rect(pg.Rect(pos.x - width / 2,
+                                                            pos.y - height / 2,
+                                                            width, height)))
 
         # Flip the display (update the display).
         pg.display.flip()
