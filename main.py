@@ -22,9 +22,8 @@ class Game:
 
         # Sprites groups.
         self.all_sprites = pg.sprite.Group()
+        self.players = pg.sprite.Group()
         self.visible_sprites = pg.sprite.Group()
-        self.obstacles = pg.sprite.Group()
-        self.moving_obstacles = pg.sprite.Group()
         self.walls = pg.sprite.Group()
         self.moving_walls = pg.sprite.Group()
 
@@ -34,7 +33,6 @@ class Game:
         self.playing = True
 
         self.player_pos = []
-        self.space_pos = []
 
         # Load data from files.
         self.load()
@@ -86,7 +84,7 @@ class Game:
             "back": True,
             "parts": {
                 1: {
-                    "vel": 15,
+                    "vel": 30,
                     "rot": 90,
                     "steps": 100
                 },
@@ -117,7 +115,7 @@ class Game:
         self.create_map("map1.tmx")
 
         # Create the player object.
-        self.player = Player(self, 300, 100, "playerimg.png")
+        self.player = Player(self, 100, 1900, "playerimg.png")
 
         # Start playing the background music.
         pg.mixer.music.load(self.game_music)
@@ -152,8 +150,6 @@ class Game:
                 if event.key == K_f:
                     self.show_fps = not self.show_fps
                 if event.key == K_SPACE:
-                    self.space_pos.append(Vec(self.player.pos.x,
-                                              self.player.pos.y))
                     self.player.try_jump("push")
                 if event.key == K_g:
                     # Change the player gravity up/down.
@@ -161,7 +157,8 @@ class Game:
 
     def update(self):
         # Game update loop.
-        self.all_sprites.update()
+        self.players.update()
+        self.moving_walls.update()
         # Make the camera center on the player sprite.
         self.camera.update(self.player)
         # Update title with information.
@@ -213,31 +210,23 @@ class Game:
             # Draw debug.
             self.draw_debug()
 
-        self.player_pos.append(Vec(self.player.pos.x, self.player.pos.y))
-        if len(self.player_pos) > 100:
-            del self.player_pos[0]
-        width, height = self.player.hit_rect.width, self.player.hit_rect.height
-        for pos in self.player_pos:
-            surface = pg.Surface(
-                (width, height))
-            surface.set_alpha(50)
-            surface.fill(self.player.color)
-            self.screen.blit(surface,
-                             self.camera.apply_rect(pg.Rect(pos.x - width / 2,
-                                                            pos.y - height / 2,
-                                                            width, height)))
-
-        if len(self.space_pos) > 2:
-            del self.space_pos[0]
-        for pos in self.space_pos:
-            surface = pg.Surface(
-                (width, height))
-            surface.set_alpha(128)
-            surface.fill(RED)
-            self.screen.blit(surface,
-                             self.camera.apply_rect(pg.Rect(pos.x - width / 2,
-                                                            pos.y - height / 2,
-                                                            width, height)))
+        # # Cool effect.
+        # self.player_pos.append(Vec(self.player.pos.x, self.player.pos.y))
+        # if len(self.player_pos) > 100:
+        #     del self.player_pos[0]
+        # width, height = self.player.hit_rect.width, self.player.hit_rect.height
+        # for pos in self.player_pos:
+        #     surface = pg.Surface(
+        #         (width, height))
+        #     surface.set_alpha(50)
+        #     surface.fill(self.player.color)
+        #     self.screen.blit(surface,
+        #                      self.camera.apply_rect(pg.Rect(pos.x - width / 2,
+        #                                                     pos.y - height / 2,
+        #                                                     width, height)))
+        # # Make sure it doesn't cover the player, so draw the player on top.
+        # for sprite in self.players:
+        #     self.screen.blit(sprite.image, self.camera.apply_sprite(sprite))
 
         # Flip the display (update the display).
         pg.display.flip()
