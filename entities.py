@@ -155,7 +155,6 @@ class Player(pg.sprite.Sprite):
         hits = pg.sprite.spritecollide(self, self.game.walls, False,
                                        collide_hit_rect_both)
         if hits:
-            print('vel y start', self.vel.y)
             if self.vel.y > 0:
                 # Moving down, will hit top.
                 hit = min([hit.hit_rect.top for hit in hits])
@@ -202,15 +201,20 @@ class Player(pg.sprite.Sprite):
         else:
             # Reset velocity of just fell off a moving platform.
             if self.moving_obstacle and not self.jumping:
-                print('fell off', self.vel.y)
                 if self.vel.y > 0 and self.gravity_orientation == 1 or \
                         self.vel.y < 0 and self.gravity_orientation == -1:
                     # If going down, start falling at the speed of the
                     # platform.
-                    if self.moving_obstacle.vel.y > 0:
-                        self.vel.y = self.moving_obstacle.vel.y
-                    else:
-                        self.vel.y = 0
+                    if self.gravity_orientation == 1:
+                        if self.moving_obstacle.vel.y > 0:
+                            self.vel.y = self.moving_obstacle.vel.y
+                        else:
+                            self.vel.y = 0
+                    elif self.gravity_orientation == -1:
+                        if self.moving_obstacle.vel.y < 0:
+                            self.vel.y = self.moving_obstacle.vel.y
+                        else:
+                            self.vel.y = 0
                     self.moving_obstacle = None
                     # Make sure to counteract the velocity that was just added
                     # this frame, and add the correct velocity instead (the
