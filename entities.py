@@ -29,6 +29,7 @@ class Player(pg.sprite.Sprite):
         self.game = game
         # Position.
         self.pos = Vec(x, y)
+        self.displacement = Vec(0, 0)
         self.vel = Vec(0, 0)
         self.acc = Vec(0, 0)
         # Jumping.
@@ -44,6 +45,8 @@ class Player(pg.sprite.Sprite):
                                 PLAYER_HIT_RECT_WIDTH, PLAYER_HIT_RECT_HEIGHT)
         self.hit_rect.center = self.rect.center
         self.color = CYAN
+
+        self.moving_obstacle = None
 
     def update_image(self):
         # Use .copy() to not modify the stored image
@@ -76,20 +79,20 @@ class Player(pg.sprite.Sprite):
                 # Test to see if there is a wall to jump off of.
                 wall_jump_direction = None
 
-                self.hit_rect.x += 1
+                self.hit_rect.centerx += 1
                 collision = pg.sprite.spritecollide(self, self.game.walls,
                                                     False,
                                                     collide_hit_rect_both)
-                self.hit_rect.x -= 1
+                self.hit_rect.centerx -= 1
 
                 if collision:
                     wall_jump_direction = -1
                 else:
-                    self.hit_rect.x -= 1
+                    self.hit_rect.centerx -= 1
                     collision = pg.sprite.spritecollide(self, self.game.walls,
                                                         False,
                                                         collide_hit_rect_both)
-                    self.hit_rect.x += 1
+                    self.hit_rect.centerx += 1
 
                     if collision:
                         wall_jump_direction = 1
@@ -174,8 +177,17 @@ class Player(pg.sprite.Sprite):
                     self.on_ground = True
                     self.jumping = False
 
-            # Reset y velocity.
-            self.vel.y = 0
+            # Test to reset y velocity. The only scenario where it would not
+            # be reset when their is a y axis collision, is when it is a
+            # moving obstacle. That way, you smoothly move with the moving
+            # obstacle. If there is no moving obstacle, then reset the y
+            # velocity.
+            self.moving_obstacle = None
+            for hit in hits:
+                if isinstance(hit, MovingObstacle):
+                    self.moving_obstacle = hit
+            if not self.moving_obstacle:
+                self.vel.y = 0
 
             for hit in hits:
                 if isinstance(hit, MovingObstacle):
@@ -184,6 +196,16 @@ class Player(pg.sprite.Sprite):
                             hit.vel.y < 0 and self.gravity_orientation == -1:
                         self.pos.x += hit.vel.x * self.game.dt
         else:
+            # Reset velocity of just fell off a moving platform.
+            if self.moving_obstacle and not self.jumping:
+                if self.vel.y > 0 and self.gravity_orientation == 1 or \
+                        self.vel.y < 0 and self.gravity_orientation == -1:
+                    self.vel.y = 0
+                    self.moving_obstacle = None
+                    # Make sure to counteract the velocity that was just added
+                    # this frame.
+                    self.pos.y += self.displacement.y * -1
+                    self.hit_rect.centerx = self.pos.x
             # Test to see if a platform is nearby. Make the player move
             # along with the moving obstacle if they are close enough to the
             # moving obstacle.
@@ -206,8 +228,7 @@ class Player(pg.sprite.Sprite):
                 self.pos.x += hits[0].vel.x * self.game.dt
 
                 # Update player rect.
-                self.hit_rect.x = self.pos.x
-                self.rect = self.hit_rect
+                self.hit_rect.centerx = self.pos.x
             else:
                 # Not near a platform.
                 self.on_ground = False
@@ -215,7 +236,6 @@ class Player(pg.sprite.Sprite):
         self.rect.center = self.hit_rect.center
 
     def move(self):
-        # Reset acceleration.
         self.acc = Vec(0, 0)
 
         # Apply gravity.
@@ -232,9 +252,10 @@ class Player(pg.sprite.Sprite):
         self.vel = self.vel + self.acc * self.game.dt
         # Displacement.
         # d = vit + 1/2at^2
-        displacement = self.vel * self.game.dt + 0.5 * self.acc * self.game.dt ** 2
+        self.displacement = self.vel * self.game.dt + 0.5 * self.acc * \
+                        self.game.dt ** 2
 
-        self.pos += displacement
+        self.pos += self.displacement
 
         # Wrap around the screen.
         # screen_wrap(self)
@@ -308,12 +329,17 @@ class MovingObstacle(Obstacle):
         # Other data.
         self.game = game
 
-    def move(self):
-        # Update position.
-        self.pos += self.vel * self.game.dt
+        self.first_move = True
 
-        # Add another step to the counter.
-        self.step += 1
+    def move(self):
+        if self.first_move:
+            self.first_move = False
+        else:
+            # Update position.
+            self.pos += self.vel * self.game.dt
+
+                # Add another step to the counter.
+            self.step += 1
 
         # If the moving obstacle moved onto the player, push the player out
         # of the way.
@@ -328,6 +354,7 @@ class MovingObstacle(Obstacle):
             else:
                 # The final part just finished, so go back to the start.
                 self.part = 1
+                self.first_move = True
             self.step = 0
             rot = self.movement['parts'][self.parts[self.part - 1]]['rot']
             self.vel = Vec(
