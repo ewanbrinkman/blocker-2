@@ -34,6 +34,8 @@ class Game:
 
         self.player_pos = []
 
+        self.camera_update = True
+
         # Load data from files.
         self.load()
 
@@ -84,9 +86,9 @@ class Game:
             "back": True,
             "parts": {
                 1: {
-                    "vel": 60,
-                    "rot": 90,
-                    "steps": 200
+                    "vel": 100,
+                    "rot": 45,
+                    "steps": 100
                 },
                 # 2: {
                 #     "vel": 10,
@@ -154,13 +156,17 @@ class Game:
                 if event.key == K_g:
                     # Change the player gravity up/down.
                     self.player.gravity_orientation *= -1
+                if event.key == K_c:
+                    # Change the player gravity up/down.
+                    self.camera_update = not self.camera_update
 
     def update(self):
         # Game update loop.
         self.players.update()
         self.moving_walls.update()
         # Make the camera center on the player sprite.
-        self.camera.update(self.player)
+        if self.camera_update:
+            self.camera.update(self.player)
         # Update title with information.
         title = TITLE + f" FPS: {round(self.clock.get_fps(), 2)}"
         pg.display.set_caption(title)

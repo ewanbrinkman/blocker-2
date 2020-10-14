@@ -55,33 +55,6 @@ class Player(pg.sprite.Sprite):
         self.rect.center = (self.pos.x, self.pos.y)
         self.hit_rect.center = self.rect.center
 
-    # def collisions(self, group, directions):
-    #     # All the hit data,
-    #     hits = {direction: None for direction in directions}
-    #
-    #     for direction in directions:
-    #         if direction == "up":
-    #             self.hit_rect.centery += 1
-    #             hits['up'] = [data for data in collide_group(self, group, "y")]
-    #             self.hit_rect.centery -= 1
-    #         elif direction == "down":
-    #             self.hit_rect.centery -= 1
-    #             hits['down'] = [data for data in collide_group(self, group,
-    #                                                            "y")]
-    #             self.hit_rect.centery += 1
-    #         elif direction == "right":
-    #             self.hit_rect.centerx += 1
-    #             hits['right'] = [data for data in collide_group(self, group,
-    #                                                             "x")]
-    #             self.hit_rect.centerx -= 1
-    #         elif direction == "left":
-    #             self.hit_rect.centerx -= 1
-    #             hits['left'] = [data for data in collide_group(self, group,
-    #                                                            "x")]
-    #             self.hit_rect.centerx += 1
-    #
-    #     return hits
-
     def jump(self, wall_jump, x_direction=None):
         # Jump up.
         self.jumping = True
@@ -174,7 +147,7 @@ class Player(pg.sprite.Sprite):
                 hit = min([hit.hit_rect.top for hit in hits])
                 self.pos.y = hit - self.hit_rect.width / 2
                 self.hit_rect.bottom = hit
-                self.vel.y = 0
+                # self.vel.y = 0
                 if self.gravity_orientation == 1:
                     # Hit the ground again if the gravity is normal.
                     self.on_ground = True
@@ -184,17 +157,49 @@ class Player(pg.sprite.Sprite):
                 hit = max([hit.hit_rect.bottom for hit in hits])
                 self.pos.y = hit + self.hit_rect.width / 2
                 self.hit_rect.top = hit
-                self.vel.y = 0
+                # self.vel.y = 0
                 if self.gravity_orientation == -1:
                     # Hit the ground again if the gravity is reversed (you
                     # fall up instead of down).
                     self.on_ground = True
                     self.jumping = False
+
+            # Reset y velocity.
+            self.vel.y = 0
+
             for hit in hits:
                 if isinstance(hit, MovingObstacle):
-                    self.pos.x += hit.vel.x * self.game.dt
+                    # Only follow along if the moving obstacle is going down.
+                    if hit.vel.y > 0 and self.gravity_orientation == 1 or \
+                            hit.vel.y < 0 and self.gravity_orientation == -1:
+                        self.pos.x += hit.vel.x * self.game.dt
         else:
-            self.on_ground = False
+            # Test to see if a platform is nearby. Make the player move
+            # along with the moving obstacle if they are close enough to the
+            # moving obstacle.
+            if self.gravity_orientation == 1:
+                self.hit_rect.y += 2
+                hits = pg.sprite.spritecollide(self, self.game.moving_walls, False,
+                                               collide_hit_rect_both)
+                self.hit_rect.y -= 2
+            elif self.gravity_orientation == -1:
+                self.hit_rect.y -= 2
+                hits = pg.sprite.spritecollide(self, self.game.moving_walls,
+                                               False,
+                                               collide_hit_rect_both)
+                self.hit_rect.y += 2
+            if hits:
+                # Near a platform.
+                self.on_ground = True
+                # Make the player move along with the moving obstacle.
+                self.pos.x += hits[0].vel.x * self.game.dt
+
+                # Update player rect.
+                self.hit_rect.x = self.pos.x
+                self.rect = self.hit_rect
+            else:
+                # Not near a platform.
+                self.on_ground = False
 
         self.rect.center = self.hit_rect.center
 
@@ -217,6 +222,7 @@ class Player(pg.sprite.Sprite):
         # Displacement.
         # d = vit + 1/2at^2
         displacement = self.vel * self.game.dt + 0.5 * self.acc * self.game.dt ** 2
+
         self.pos += displacement
 
         # Wrap around the screen.
@@ -255,9 +261,6 @@ class Obstacle(pg.sprite.Sprite):
         self.rect = pg.Rect(x, y, width, height)
         self.hit_rect = self.rect
         self.obstacle_type = obstacle_type
-        # Bounce is the how much of the velocity should be conserved when
-        # bouncing off the wall. It is a multiplier, so 0 is none, 1 is all,
-        # and 2 would be twice the velocity, and so on.
 
 
 class MovingObstacle(Obstacle):
@@ -341,14 +344,17 @@ class MovingObstacle(Obstacle):
                 # Moving right, place player on right side.
                 player.pos.x = self.hit_rect.right + player.hit_rect.width / 2
                 player.hit_rect.left = self.hit_rect.right
-                player.vel.x = 0
-                player.pos.x += self.vel.x * self.game.dt
+                # player.vel.x = 0
+                # player.pos.x += self.vel.x * self.game.dt
             elif self.vel.x < 0:
                 # Moving left, place player on left side.
                 player.pos.x = self.hit_rect.left - player.hit_rect.width / 2
                 player.hit_rect.right = self.hit_rect.left
-                player.vel.x = 0
-                player.pos.x += self.vel.x * self.game.dt
+                # player.vel.x = 0
+                # player.pos.x += self.vel.x * self.game.dt
+
+            # Update player rect.
+            player.rect = player.hit_rect
 
         self.hit_rect.y = self.pos.y
         # Test if a player was hit.
@@ -363,15 +369,22 @@ class MovingObstacle(Obstacle):
                 # Moving down, place player on the bottom.
                 player.pos.y = self.hit_rect.bottom + player.hit_rect.height / 2
                 player.hit_rect.top = self.hit_rect.bottom
-                player.vel.y = 0
-                player.pos.y += self.vel.y * self.game.dt
+                # player.vel.y = 0
+                # player.pos.y += self.vel.y * self.game.dt
             elif self.vel.y < 0:
                 # Moving up, place player on the top.
                 player.pos.y = self.hit_rect.top - player.hit_rect.height / 2
                 player.hit_rect.bottom = self.hit_rect.top
-                player.vel.y = 0
-                player.pos.y += self.vel.y * self.game.dt
+                # player.vel.y = 0
+                # player.pos.y += self.vel.y * self.game.dt
 
+            # Make the player move along with the moving obstacle.
+            player.pos.x += self.vel.x * self.game.dt
+
+            # Update player rect.
+            player.rect = player.hit_rect
+
+        # Update self rect position.
         self.rect.topleft = self.hit_rect.topleft
 
     def update(self):

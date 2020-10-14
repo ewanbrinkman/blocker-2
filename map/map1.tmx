@@ -220,7 +220,7 @@
   </object>
  </objectgroup>
  <objectgroup id="9" name="MovingWalls">
-  <object id="70" name="wall" type="moving_wall" x="857.5" y="1820" width="157.5" height="20">
+  <object id="70" name="wall" type="moving_wall" x="840" y="1820" width="157.5" height="20">
    <properties>
     <property name="object" value="moving_obstacle"/>
    </properties>
