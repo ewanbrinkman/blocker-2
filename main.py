@@ -16,7 +16,7 @@ class Game:
         # Display
         pg.display.set_caption(TITLE)
         self.screen = pg.display.set_mode(
-            (SCREEN_WIDTH, SCREEN_HEIGHT))  # , FULLSCREEN)
+            (SCREEN_WIDTH, SCREEN_HEIGHT), FULLSCREEN)
         self.show_fps = False
         self.debug = False
 
@@ -86,7 +86,7 @@ class Game:
             "back": True,
             "parts": {
                 1: {
-                    "vel": 100,
+                    "vel": 500,
                     "rot": 45,
                     "steps": 100
                 },

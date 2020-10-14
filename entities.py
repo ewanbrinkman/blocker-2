@@ -110,6 +110,16 @@ class Player(pg.sprite.Sprite):
         if keys[K_SPACE]:
             self.try_jump("hold")
 
+    def check_force_push(self):
+        # Check to see what the player was pushed into, and if they should
+        # be killed because of it.
+        hits = pg.sprite.spritecollide(self, self.game.walls, False,
+                                       collide_hit_rect_both)
+        if hits:
+            # The player was pushed into something they should not be in,
+            # reset their position to the start.
+            self.pos = Vec(100, 1900)
+
     def collide_walls(self):
         self.hit_rect.centerx = self.pos.x
         # Find all sprites in the target group that are bring hit.
@@ -177,17 +187,18 @@ class Player(pg.sprite.Sprite):
             # Test to see if a platform is nearby. Make the player move
             # along with the moving obstacle if they are close enough to the
             # moving obstacle.
+            check_direction_amount = 5
             if self.gravity_orientation == 1:
-                self.hit_rect.y += 2
+                self.hit_rect.y += check_direction_amount
                 hits = pg.sprite.spritecollide(self, self.game.moving_walls, False,
                                                collide_hit_rect_both)
-                self.hit_rect.y -= 2
+                self.hit_rect.y -= check_direction_amount
             elif self.gravity_orientation == -1:
-                self.hit_rect.y -= 2
+                self.hit_rect.y -= check_direction_amount
                 hits = pg.sprite.spritecollide(self, self.game.moving_walls,
                                                False,
                                                collide_hit_rect_both)
-                self.hit_rect.y += 2
+                self.hit_rect.y += check_direction_amount
             if hits:
                 # Near a platform.
                 self.on_ground = True
@@ -386,6 +397,10 @@ class MovingObstacle(Obstacle):
 
         # Update self rect position.
         self.rect.topleft = self.hit_rect.topleft
+
+        # Check to see if the player was pushed into anything they shouldn't
+        # be in.
+        self.game.player.check_force_push()
 
     def update(self):
         # Move the obstacle around.
