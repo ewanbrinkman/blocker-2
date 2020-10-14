@@ -84,9 +84,9 @@ class Game:
             "back": True,
             "parts": {
                 1: {
-                    "vel": 30,
+                    "vel": 60,
                     "rot": 90,
-                    "steps": 100
+                    "steps": 200
                 },
                 # 2: {
                 #     "vel": 10,

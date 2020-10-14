@@ -163,9 +163,6 @@ class Player(pg.sprite.Sprite):
                         self.vel.y < 0 and self.gravity_orientation == -1:
                     # Wall slide.
                     self.vel.y *= PLAYER_MOVEMENT["jump"]["wall slide"]
-            # for hit in hits:
-            #     if isinstance(hit, MovingObstacle):
-            #         self.pos.x += hit.vel.x * self.game.dt
 
         self.hit_rect.centery = self.pos.y
         # Find all sprites in the target group that are bring hit.
@@ -193,9 +190,9 @@ class Player(pg.sprite.Sprite):
                     # fall up instead of down).
                     self.on_ground = True
                     self.jumping = False
-            # for hit in hits:
-            #     if isinstance(hit, MovingObstacle):
-            #         self.pos.y += hit.vel.y * self.game.dt
+            for hit in hits:
+                if isinstance(hit, MovingObstacle):
+                    self.pos.x += hit.vel.x * self.game.dt
         else:
             self.on_ground = False
 
@@ -269,8 +266,9 @@ class MovingObstacle(Obstacle):
         # parent class.
         groups = [game.visible_sprites, game.walls]
         # The image size will be the width and the height.
-        # self.image = game.wall_imgs["sky.png"]
-        self.image = pg.Surface((width, height))
+        self.image = game.wall_imgs["bridge.png"]
+        self.image = pg.transform.scale(self.image, (int(width), int(height)))
+        # self.image = pg.Surface((width, height))
         image_rect = self.image.get_rect()
         super().__init__(game, x, y, image_rect.width, image_rect.height,
                          obstacle_type, groups)
@@ -278,38 +276,55 @@ class MovingObstacle(Obstacle):
         # Movement.
         self.pos = Vec(x, y)
         self.movement = movement
+        self.parts = [n for n in self.movement['parts']]
+        self.one_way_length = len(self.parts)
         self.part = 1
         self.step = 0
-        rot = self.movement['parts'][self.part]['rot']
-        self.vel = Vec(self.movement['parts'][self.part]['vel'], 0).rotate(-rot)
+        # If the moving obstacle goes goes back, then copy create a copy of
+        # movement and add it to movement, except reversed.
+        if self.movement['back']:
+            back_part = self.parts.copy()
+            back_part.reverse()
+            self.parts += back_part
+
+        rot = self.movement['parts'][self.parts[self.part - 1]]['rot']
+        self.vel = Vec(
+            self.movement['parts'][self.parts[self.part - 1]]['vel'],
+            0).rotate(-rot)
         # Other data.
         self.game = game
 
     def move(self):
         # Update position.
-        rot = self.movement['parts'][self.part]['rot']
-        vel = Vec(self.movement['parts'][self.part]['vel'], 0).rotate(-rot)
-        self.pos += vel * self.game.dt
+        self.pos += self.vel * self.game.dt
 
         # Add another step to the counter.
         self.step += 1
-        if self.step == self.movement['parts'][self.part]['steps']:
+
+        # If the moving obstacle moved onto the player, push the player out
+        # of the way.
+        self.collide_player()
+
+        # Update current part of movement.
+        if self.step == self.movement['parts'][self.parts[self.part - 1]]['steps']:
             # If all steps are done for the section, go to the next section.
-            if self.part + 1 in self.movement['parts']:
-                # Go to the next part.
+            if self.part + 1 <= len(self.parts):
+                # Go to the next part if.
                 self.part += 1
             else:
                 # The final part just finished, so go back to the start.
                 self.part = 1
             self.step = 0
-            rot = self.movement['parts'][self.part]['rot']
-            self.vel = Vec(self.movement['parts'][self.part]['vel'], 0).rotate(
-                -rot)
+            rot = self.movement['parts'][self.parts[self.part - 1]]['rot']
+            self.vel = Vec(
+                self.movement['parts'][self.parts[self.part - 1]]['vel'],
+                0).rotate(-rot)
+            # Make the vel the opposite if it is on the way back.
+            if self.part > self.one_way_length:
+                self.vel *= -1
 
         # Wrap around the screen.
         # screen_wrap(self)
-
-        self.collide_player()
 
     def collide_player(self):
         self.hit_rect.x = self.pos.x
