@@ -88,7 +88,7 @@ class Game:
                 1: {
                     "vel": 300,
                     "rot": 90,
-                    "steps": 80
+                    "steps": 50
                 },
                 # 2: {
                 #     "vel": 10,
@@ -230,9 +230,10 @@ class Game:
         #                      self.camera.apply_rect(pg.Rect(pos.x - width / 2,
         #                                                     pos.y - height / 2,
         #                                                     width, height)))
-        # Make sure it doesn't cover the player, so draw the player on top.
+        # # Make sure it doesn't cover the player, so draw the player on top.
         # for sprite in self.players:
         #     self.screen.blit(sprite.image, self.camera.apply_sprite(sprite))
+        # # Cool effect.
 
         # Flip the display (update the display).
         pg.display.flip()

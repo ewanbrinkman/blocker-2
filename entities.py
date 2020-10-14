@@ -155,6 +155,7 @@ class Player(pg.sprite.Sprite):
         hits = pg.sprite.spritecollide(self, self.game.walls, False,
                                        collide_hit_rect_both)
         if hits:
+            print('vel y start', self.vel.y)
             if self.vel.y > 0:
                 # Moving down, will hit top.
                 hit = min([hit.hit_rect.top for hit in hits])
@@ -191,6 +192,7 @@ class Player(pg.sprite.Sprite):
             if not self.moving_obstacle:
                 self.vel.y = 0
 
+            # Follow along on x.
             for hit in hits:
                 if isinstance(hit, MovingObstacle):
                     # Only follow along if the moving obstacle is going down.
@@ -200,17 +202,26 @@ class Player(pg.sprite.Sprite):
         else:
             # Reset velocity of just fell off a moving platform.
             if self.moving_obstacle and not self.jumping:
+                print('fell off', self.vel.y)
                 if self.vel.y > 0 and self.gravity_orientation == 1 or \
                         self.vel.y < 0 and self.gravity_orientation == -1:
-                    self.vel.y = 0
+                    # If going down, start falling at the speed of the
+                    # platform.
+                    if self.moving_obstacle.vel.y > 0:
+                        self.vel.y = self.moving_obstacle.vel.y
+                    else:
+                        self.vel.y = 0
                     self.moving_obstacle = None
                     # Make sure to counteract the velocity that was just added
-                    # this frame.
+                    # this frame, and add the correct velocity instead (the
+                    # new velocity for this frame will become the velocity
+                    # of the platform.
                     self.pos.y += self.displacement.y * -1
-                    self.hit_rect.centerx = self.pos.x
+                    self.pos.y += self.vel.y * self.game.dt
+                    self.hit_rect.centery = self.pos.y
             # Test to see if a platform is nearby. Make the player move
-            # along with the moving obstacle if they are close enough to the
-            # moving obstacle.
+            # along with the moving obstacle along x if they are close
+            # enough to the moving obstacle.
             check_direction_amount = 5
             if self.gravity_orientation == 1:
                 self.hit_rect.y += check_direction_amount
@@ -226,7 +237,7 @@ class Player(pg.sprite.Sprite):
             if hits:
                 # Near a platform.
                 self.on_ground = True
-                # Make the player move along with the moving obstacle.
+                # Make the player move along with the moving obstacle along x.
                 self.pos.x += hits[0].vel.x * self.game.dt
 
                 # Update player rect.
