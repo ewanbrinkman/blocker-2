@@ -185,7 +185,9 @@ class Player(pg.sprite.Sprite):
             self.moving_obstacle = None
             for hit in hits:
                 if isinstance(hit, MovingObstacle):
-                    self.moving_obstacle = hit
+                    if self.vel.y > 0 and self.gravity_orientation == 1 or \
+                            self.vel.y < 0 and self.gravity_orientation == -1:
+                        self.moving_obstacle = hit
             if not self.moving_obstacle:
                 self.vel.y = 0
 

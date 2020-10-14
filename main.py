@@ -216,23 +216,23 @@ class Game:
             # Draw debug.
             self.draw_debug()
 
-        # Cool effect.
-        self.player_pos.append(Vec(self.player.pos.x, self.player.pos.y))
-        if len(self.player_pos) > 100:
-            del self.player_pos[0]
-        width, height = self.player.hit_rect.width, self.player.hit_rect.height
-        for pos in self.player_pos:
-            surface = pg.Surface(
-                (width, height))
-            surface.set_alpha(50)
-            surface.fill(self.player.color)
-            self.screen.blit(surface,
-                             self.camera.apply_rect(pg.Rect(pos.x - width / 2,
-                                                            pos.y - height / 2,
-                                                            width, height)))
+        # # Cool effect.
+        # self.player_pos.append(Vec(self.player.pos.x, self.player.pos.y))
+        # if len(self.player_pos) > 100:
+        #     del self.player_pos[0]
+        # width, height = self.player.hit_rect.width, self.player.hit_rect.height
+        # for pos in self.player_pos:
+        #     surface = pg.Surface(
+        #         (width, height))
+        #     surface.set_alpha(50)
+        #     surface.fill(self.player.color)
+        #     self.screen.blit(surface,
+        #                      self.camera.apply_rect(pg.Rect(pos.x - width / 2,
+        #                                                     pos.y - height / 2,
+        #                                                     width, height)))
         # Make sure it doesn't cover the player, so draw the player on top.
-        for sprite in self.players:
-            self.screen.blit(sprite.image, self.camera.apply_sprite(sprite))
+        # for sprite in self.players:
+        #     self.screen.blit(sprite.image, self.camera.apply_sprite(sprite))
 
         # Flip the display (update the display).
         pg.display.flip()
