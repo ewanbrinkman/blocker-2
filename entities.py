@@ -333,7 +333,6 @@ class MovingObstacle(Obstacle):
         self.parts = [n for n in self.movement['parts']]
         self.one_way_length = len(self.parts)
         self.part = 1
-        self.step = 0
         # If the moving obstacle goes goes back, then copy create a copy of
         # movement and add it to movement, except reversed.
         if self.movement['back']:
@@ -341,31 +340,35 @@ class MovingObstacle(Obstacle):
             back_part.reverse()
             self.parts += back_part
 
+        # Movement for the current part.
         rot = self.movement['parts'][self.parts[self.part - 1]]['rot']
         self.vel = Vec(
             self.movement['parts'][self.parts[self.part - 1]]['vel'],
             0).rotate(-rot)
+        self.distance = self.movement['parts'][self.parts[self.part - 1]][
+            'distance']
+        # The starting position for each movement part.
+        self.start_pos = Vec(x, y)
+        self.end_pos = Vec(self.start_pos.x, self.start_pos.y) + Vec(
+            self.distance, 0).rotate(-rot)
+
         # Other data.
         self.game = game
 
-        self.first_move = True
-
     def move(self):
-        if self.first_move:
-            self.first_move = False
-        else:
-            # Update position.
-            self.pos += self.vel * self.game.dt
-
-                # Add another step to the counter.
-            self.step += 1
+        # Update position.
+        self.pos += self.vel * self.game.dt
 
         # If the moving obstacle moved onto the player, push the player out
         # of the way.
         self.collide_player()
 
-        # Update current part of movement.
-        if self.step == self.movement['parts'][self.parts[self.part - 1]]['steps']:
+        # Update current part of movement if f the moving obstacle moved the
+        # required distance.
+        distance = self.pos - self.start_pos
+        distance = distance.length()
+        if distance >= self.distance:
+            self.pos = Vec(self.end_pos.x, self.end_pos.y)
             # If all steps are done for the section, go to the next section.
             if self.part + 1 <= len(self.parts):
                 # Go to the next part if.
@@ -373,15 +376,22 @@ class MovingObstacle(Obstacle):
             else:
                 # The final part just finished, so go back to the start.
                 self.part = 1
-                self.first_move = True
-            self.step = 0
             rot = self.movement['parts'][self.parts[self.part - 1]]['rot']
             self.vel = Vec(
                 self.movement['parts'][self.parts[self.part - 1]]['vel'],
                 0).rotate(-rot)
-            # Make the vel the opposite if it is on the way back.
+            self.distance = self.movement['parts'][self.parts[self.part - 1]][
+                'distance']
+            # The starting position for each movement part.
+            self.start_pos = Vec(self.pos.x, self.pos.y)
+            # Make the vel and distance the opposite if it is on the way back.
             if self.part > self.one_way_length:
                 self.vel *= -1
+                self.end_pos = Vec(self.start_pos.x, self.start_pos.y) - Vec(
+                    self.distance, 0).rotate(-rot)
+            else:
+                self.end_pos = Vec(self.start_pos.x, self.start_pos.y) + Vec(
+                    self.distance, 0).rotate(-rot)
 
         # Wrap around the screen.
         # screen_wrap(self)

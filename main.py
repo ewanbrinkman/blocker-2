@@ -88,13 +88,18 @@ class Game:
                 1: {
                     "vel": 150,
                     "rot": 90,
-                    "steps": 150
+                    "distance": 400
                 },
-                # 2: {
-                #     "vel": 10,
-                #     "rot": 0,
-                #     "steps": 100
-                # }
+                2: {
+                    "vel": 400,
+                    "rot": 10,
+                    "distance": 400
+                },
+                3: {
+                    "vel": 200,
+                    "rot": 135,
+                    "distance": 600,
+                }
             }
             }
 
