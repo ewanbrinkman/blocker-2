@@ -210,11 +210,13 @@ class Player(pg.sprite.Sprite):
                             self.vel.y = self.moving_obstacle.vel.y
                         else:
                             self.vel.y = 0
+                            # self.vel.y = self.moving_obstacle.vel.y
                     elif self.gravity_orientation == -1:
                         if self.moving_obstacle.vel.y < 0:
                             self.vel.y = self.moving_obstacle.vel.y
                         else:
                             self.vel.y = 0
+                            # self.vel.y = self.moving_obstacle.vel.y
                     self.moving_obstacle = None
                     # Make sure to counteract the velocity that was just added
                     # this frame, and add the correct velocity instead (the
