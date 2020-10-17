@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.4" tiledversion="1.4.2" orientation="orthogonal" renderorder="right-down" width="40" height="30" tilewidth="70" tileheight="70" infinite="0" nextlayerid="10" nextobjectid="88">
+<map version="1.4" tiledversion="1.4.2" orientation="orthogonal" renderorder="right-down" width="40" height="30" tilewidth="70" tileheight="70" infinite="0" nextlayerid="11" nextobjectid="148">
  <tileset firstgid="1" name="tiles_spritesheet" tilewidth="70" tileheight="70" spacing="2" tilecount="156" columns="12">
   <image source="tiles_spritesheet.png" width="914" height="936"/>
  </tileset>
@@ -191,6 +191,283 @@
   <object id="87" name="wall" type="moving_wall" x="1470" y="1450" width="140" height="20">
    <properties>
     <property name="object" value="moving_obstacle"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup id="10" name="Items">
+  <object id="89" name="item" type="coin" x="227.5" y="1837.5" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="90" name="item" type="coin" x="647.5" y="1767.5" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="91" name="item" type="coin" x="507.5" y="1697.5" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="92" name="item" type="coin" x="367.5" y="1627.5" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="93" name="item" type="coin" x="227.5" y="1557.5" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="94" name="item" type="coin" x="367.5" y="1487.5" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="95" name="item" type="coin" x="507.5" y="1417.5" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="96" name="item" type="coin" x="647.5" y="1347.5" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="97" name="item" type="coin" x="857.5" y="1347.5" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="98" name="item" type="coin" x="927.5" y="1347.5" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="99" name="item" type="coin" x="927.5" y="1277.5" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="100" name="item" type="coin" x="857.5" y="1277.5" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="105" name="item" type="coin" x="997.5" y="1347.5" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="106" name="item" type="coin" x="1067.5" y="1347.5" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="107" name="item" type="coin" x="1067.5" y="1277.5" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="108" name="item" type="coin" x="997.5" y="1277.5" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="109" name="item" type="coin" x="1137.5" y="1347.5" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="110" name="item" type="coin" x="1207.5" y="1347.5" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="111" name="item" type="coin" x="1207.5" y="1277.5" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="112" name="item" type="coin" x="1137.5" y="1277.5" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="113" name="item" type="coin" x="1277.5" y="1347.5" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="114" name="item" type="coin" x="1347.5" y="1347.5" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="115" name="item" type="coin" x="1347.5" y="1277.5" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="116" name="item" type="coin" x="1277.5" y="1277.5" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="117" name="item" type="coin" x="1417.5" y="1347.5" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="118" name="item" type="coin" x="1417.5" y="1277.5" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="119" name="item" type="coin" x="787.5" y="1662.5" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="120" name="item" type="coin" x="840" y="1697.5" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="121" name="item" type="coin" x="805" y="1715" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="122" name="item" type="coin" x="787.5" y="1715" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="123" name="item" type="coin" x="822.5" y="1662.5" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="124" name="item" type="coin" x="840" y="1662.5" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="125" name="item" type="coin" x="840" y="1680" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="126" name="item" type="coin" x="822.5" y="1715" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="127" name="item" type="coin" x="822.5" y="1715" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="128" name="item" type="coin" x="857.5" y="1767.5" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="129" name="item" type="coin" x="875" y="1750" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="130" name="item" type="coin" x="857.5" y="1715" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="131" name="item" type="coin" x="822.5" y="1680" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="132" name="item" type="coin" x="787.5" y="1697.5" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="133" name="item" type="coin" x="770" y="1750" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="134" name="item" type="coin" x="822.5" y="1767.5" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="135" name="item" type="coin" x="822.5" y="1750" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="136" name="item" type="coin" x="840" y="1732.5" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="137" name="item" type="coin" x="805" y="1732.5" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="138" name="item" type="coin" x="857.5" y="1732.5" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="139" name="item" type="coin" x="875" y="1697.5" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="140" name="item" type="coin" x="857.5" y="1697.5" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="141" name="item" type="coin" x="805" y="1715" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="142" name="item" type="coin" x="805" y="1750" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="143" name="item" type="coin" x="822.5" y="1750" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="144" name="item" type="coin" x="840" y="1750" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="145" name="item" type="coin" x="822.5" y="1715" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="146" name="item" type="coin" x="805" y="1697.5" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
+   </properties>
+  </object>
+  <object id="147" name="item" type="coin" x="840" y="1732.5" width="35" height="35">
+   <properties>
+    <property name="object" value="item"/>
    </properties>
   </object>
  </objectgroup>

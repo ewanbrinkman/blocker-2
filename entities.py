@@ -145,8 +145,8 @@ class Player(pg.sprite.Sprite):
                 # Only slide on walls when in the air, and going down
                 # towards where gravity is pulling. That way, you don't
                 # slide on walls when jumping up.
-                if self.vel.y > 0 and self.gravity_orientation == 1 or \
-                        self.vel.y < 0 and self.gravity_orientation == -1:
+                if self.vel.y >= 0 and self.gravity_orientation == 1 or \
+                        self.vel.y <= 0 and self.gravity_orientation == -1:
                     # Wall slide.
                     self.vel.y *= PLAYER_MOVEMENT["jump"]["wall slide"]
 
@@ -185,8 +185,8 @@ class Player(pg.sprite.Sprite):
             self.moving_obstacle = None
             for hit in hits:
                 if isinstance(hit, MovingObstacle):
-                    if self.vel.y > 0 and self.gravity_orientation == 1 or \
-                            self.vel.y < 0 and self.gravity_orientation == -1:
+                    if self.vel.y >= 0 and self.gravity_orientation == 1 or \
+                            self.vel.y <= 0 and self.gravity_orientation == -1:
                         self.moving_obstacle = hit
             if not self.moving_obstacle:
                 self.vel.y = 0
@@ -195,14 +195,14 @@ class Player(pg.sprite.Sprite):
             for hit in hits:
                 if isinstance(hit, MovingObstacle):
                     # Only follow along if the moving obstacle is going down.
-                    if hit.vel.y > 0 and self.gravity_orientation == 1 or \
-                            hit.vel.y < 0 and self.gravity_orientation == -1:
+                    if hit.vel.y >= 0 and self.gravity_orientation == 1 or \
+                            hit.vel.y <= 0 and self.gravity_orientation == -1:
                         self.pos.x += hit.vel.x * self.game.dt
         else:
             # Reset velocity of just fell off a moving platform.
             if self.moving_obstacle and not self.jumping:
-                if self.vel.y > 0 and self.gravity_orientation == 1 or \
-                        self.vel.y < 0 and self.gravity_orientation == -1:
+                if self.vel.y >= 0 and self.gravity_orientation == 1 or \
+                        self.vel.y <= 0 and self.gravity_orientation == -1:
                     # If going down, start falling at the speed of the
                     # platform.
                     if self.gravity_orientation == 1:
@@ -254,6 +254,15 @@ class Player(pg.sprite.Sprite):
 
         self.rect.center = self.hit_rect.center
 
+    def collide_items(self):
+        hits = pg.sprite.spritecollide(self, self.game.items, False,
+                                       collide_hit_rect_both)
+        if hits:
+            for hit in hits:
+                if hit.item_type == "coin":
+                    self.game.sounds['coin'].play()
+                hit.destroy()
+
     def move(self):
         self.acc = Vec(0, 0)
 
@@ -280,6 +289,8 @@ class Player(pg.sprite.Sprite):
         # screen_wrap(self)
 
         self.collide_walls()
+
+        self.collide_items()
 
     def update(self):
         # Move the player sprite based on the current movement mode type.
@@ -461,3 +472,46 @@ class MovingObstacle(Obstacle):
     def update(self):
         # Move the obstacle around.
         self.move()
+
+
+class Item(pg.sprite.Sprite):
+    def __init__(self, game, pos, item_type, random_start_step):
+        self.groups = game.all_sprites, game.visible_sprites, game.items
+        pg.sprite.Sprite.__init__(self, self.groups)
+        # Image.
+        if item_type == "coin":
+            item_img = "coinGold.png"
+        else:
+            item_img = "coinGold.png"
+        self.image = game.item_imgs[item_img]
+        self.rect = self.image.get_rect()
+        self.hit_rect = self.rect
+        self.rect.center = pos
+        self.hit_rect.center = pos
+        # Data to store.
+        self.game = game
+        self.item_type = item_type
+        self.pos = pos
+        # Item bob animation.
+        self.tween = easeInOutSine
+        if random_start_step:
+            self.step = randint(0, BOB_RANGE)
+        else:
+            self.step = 0
+        self.direction = 1
+        # Debug.
+        self.color = YELLOW
+
+    def update(self):
+        # bobbing motion (subtract 0.5 to shift halfway)
+        offset = BOB_RANGE * (self.tween(self.step / BOB_RANGE) - 0.5)
+        self.rect.centery = self.pos.y + offset * self.direction
+        self.step += BOB_SPEED
+        # switch and reset if hit maximum
+        if self.step > BOB_RANGE:
+            self.step = 0
+            self.direction *= -1
+
+    def destroy(self):
+        # Remove the item.
+        self.kill()

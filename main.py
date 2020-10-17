@@ -26,6 +26,7 @@ class Game:
         self.visible_sprites = pg.sprite.Group()
         self.walls = pg.sprite.Group()
         self.moving_walls = pg.sprite.Group()
+        self.items = pg.sprite.Group()
 
         # Game loop.
         self.clock = pg.time.Clock()
@@ -60,12 +61,25 @@ class Game:
             self.player_imgs[filename] = new_img
             # self.player_imgs[filename] = pg.transform.rotate(new_img, 90)
 
-        # Other images.
+        # Wall images.
         self.wall_imgs = {}
         for filename in WALL_IMGS:
             new_img = pg.image.load(
                 os.path.join(img_folder, filename)).convert_alpha()
             self.wall_imgs[filename] = new_img
+
+        # Item images.
+        self.item_imgs = {}
+        for filename in ITEM_IMGS:
+            new_img = pg.image.load(
+                os.path.join(img_folder, filename)).convert_alpha()
+            self.item_imgs[filename] = new_img
+
+        # Sounds.
+        self.sounds = {}
+        for sound_type, filename in SOUNDS.items():
+            new_snd = pg.mixer.Sound(os.path.join(snd_folder, filename))
+            self.sounds[sound_type] = new_snd
 
         # Music.
         self.game_music = os.path.join(snd_folder, GAME_BG_MUSIC)
@@ -91,13 +105,13 @@ class Game:
                     "distance": 400
                 },
                 2: {
-                    "vel": 400,
-                    "rot": 10,
-                    "distance": 400
+                    "vel": 50,
+                    "rot": 45,
+                    "distance": 100
                 },
                 3: {
                     "vel": 200,
-                    "rot": 135,
+                    "rot": 0,
                     "distance": 600,
                 }
             }
@@ -116,6 +130,8 @@ class Game:
                 MovingObstacle(self, tile_object.x, tile_object.y,
                                tile_object.width, tile_object.height,
                                tile_object.type, movement)
+            elif tile_object.object == "item":
+                Item(self, object_center, tile_object.type, RANDOM_START_STEP)
 
     def new(self):
         # Create the map.
@@ -167,8 +183,9 @@ class Game:
 
     def update(self):
         # Game update loop.
-        self.moving_walls.update()
-        self.players.update()
+        # self.moving_walls.update()
+        # self.players.update()
+        self.all_sprites.update()
         # Make the camera center on the player sprite.
         if self.camera_update:
             self.camera.update(self.player)

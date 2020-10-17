@@ -53,3 +53,14 @@ GAME_IMG = "playerimg.png"
 GAME_BG_MUSIC = "grasslands.mp3"
 PLAYER_IMGS = ["playerimg.png"]
 WALL_IMGS = ["bridge.png", "sky.png"]
+ITEM_IMGS = ["coinGold.png"]
+
+# Sounds.
+SOUNDS = {
+    "coin": "coin.wav"
+}
+
+# Item settings.
+BOB_RANGE = 15
+BOB_SPEED = 0.4
+RANDOM_START_STEP = False
