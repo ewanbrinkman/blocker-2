@@ -372,6 +372,7 @@ class MovingObstacle(Obstacle):
 
         # If the moving obstacle moved onto the player, push the player out
         # of the way.
+        pos = Vec(self.game.player.pos.x, self.game.player.pos.y)
         self.collide_player()
 
         # Update current part of movement if f the moving obstacle moved the
@@ -379,7 +380,9 @@ class MovingObstacle(Obstacle):
         distance = self.pos - self.start_pos
         distance = distance.length()
         if distance >= self.distance:
-            self.pos = Vec(self.end_pos.x, self.end_pos.y)
+            # Set end position, and make sure player is there too.
+            # self.pos = Vec(self.end_pos.x, self.end_pos.y)
+
             # If all steps are done for the section, go to the next section.
             if self.part + 1 <= len(self.parts):
                 # Go to the next part if.

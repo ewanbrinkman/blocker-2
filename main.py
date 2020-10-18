@@ -16,7 +16,7 @@ class Game:
         # Display
         pg.display.set_caption(TITLE)
         self.screen = pg.display.set_mode(
-            (SCREEN_WIDTH, SCREEN_HEIGHT), FULLSCREEN)
+            (SCREEN_WIDTH, SCREEN_HEIGHT))  # , FULLSCREEN)
         self.show_fps = False
         self.debug = False
 
