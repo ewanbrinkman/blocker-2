@@ -16,7 +16,7 @@ class Game:
         # Display
         pg.display.set_caption(TITLE)
         self.screen = pg.display.set_mode(
-            (SCREEN_WIDTH, SCREEN_HEIGHT))  # , FULLSCREEN)
+            (SCREEN_WIDTH, SCREEN_HEIGHT), FULLSCREEN)
         self.show_fps = False
         self.debug = False
 
@@ -79,6 +79,7 @@ class Game:
         self.sounds = {}
         for sound_type, filename in SOUNDS.items():
             new_snd = pg.mixer.Sound(os.path.join(snd_folder, filename))
+            new_snd.set_volume(0.1)
             self.sounds[sound_type] = new_snd
 
         # Music.

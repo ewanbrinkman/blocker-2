@@ -1,5 +1,4 @@
-from random import choice, randint
-from itertools import chain
+from random import randint
 from pytweening import easeInOutSine
 import pygame as pg
 from pygame.locals import *
